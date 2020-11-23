@@ -85,12 +85,20 @@ class BlockFinder {
    */
   async toObjects(absolutes) {
     return Promise.all(absolutes.map(async (absolute) => {
+      const parse =  path.parse(absolute);
       const content = await fs.promises.readFile(absolute, 'utf8');
       const matches = includes(content, this.start) && includes(content, this.stop);
+      const base = parse.base;
+      const extension = path.extname(absolute);
+      const fullPath = parse.dir;
       return {
-        content,
+        fileName: base,
+        name: base.replace(extension,''),
+        fullPath: fullPath,
+        fullName: absolute,
+        extension: path.extname(absolute),
         matches: matches ? this.extractMatches(content) : [],
-        path: path.parse(absolute),
+        content,
       };
     }));
   }
